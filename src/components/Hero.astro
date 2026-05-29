@@ -1,0 +1,387 @@
+---
+---
+
+<section class="hero" id="hero">
+  <div class="hero-glow hero-glow-blue"></div>
+  <div class="hero-glow hero-glow-gold"></div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="hero-badge">A.M Web Studio</p>
+      <h1 class="hero-title">
+        <span class="hero-line">A website your</span>
+        <span class="hero-line">Beirut business</span>
+        <span class="hero-line-last">deserves</span>
+      </h1>
+      <p class="hero-sub">
+        We build simple, beautiful websites for restaurants, cafes, clinics, and shops.
+        No technical skills needed. No hidden costs.
+      </p>
+      <div class="hero-actions">
+        <a href="#tiers" class="hero-btn hero-btn-primary">See Plans</a>
+        <a href="#contact" class="hero-btn hero-btn-ghost">Get in Touch</a>
+      </div>
+      <div class="hero-perks">
+        <span class="perk">Free hosting</span>
+        <span class="perk-dot"></span>
+        <span class="perk">Custom domain</span>
+        <span class="perk-dot"></span>
+        <span class="perk">SSL included</span>
+        <span class="perk-dot"></span>
+        <span class="perk">Pay in USD</span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card-mock">
+        <div class="mock-top">
+          <div class="mock-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="mock-url">beirutbistro.com</span>
+        </div>
+        <div class="mock-img">
+          <img
+            src="https://images.unsplash.com/photo-1744561249162-c597c1670032?auto=format&fit=crop&w=600&q=80"
+            alt="Warm restaurant interior"
+            loading="eager"
+          />
+        </div>
+        <div class="mock-footer">
+          <span class="mock-name">Beirut Bistro</span>
+          <span class="mock-status">Live</span>
+        </div>
+      </div>
+      <p class="hero-caption">Live site. Built in 2 hours. Updated by text message.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = document.querySelectorAll('.hero-badge, .hero-title, .hero-sub, .hero-actions, .hero-perks, .hero-visual');
+    els.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 400 + i * 200);
+    });
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 120px 0 80px;
+  }
+
+  .hero-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-glow-blue {
+    width: 600px;
+    height: 600px;
+    background: oklch(55% 0.16 260 / 0.08);
+    top: -20%;
+    right: -10%;
+    animation: glowPulse 8s var(--ease-out-quart) infinite alternate;
+  }
+
+  .hero-glow-gold {
+    width: 400px;
+    height: 400px;
+    background: oklch(70% 0.12 75 / 0.05);
+    bottom: -10%;
+    left: 5%;
+    animation: glowPulse 10s var(--ease-out-quart) infinite alternate-reverse;
+  }
+
+  @keyframes glowPulse {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+    100% { transform: translate(30px, -20px) scale(1.15); opacity: 1; }
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-text {
+    max-width: 540px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-light);
+    margin-bottom: 28px;
+    border: 1px solid oklch(65% 0.14 265 / 0.2);
+    padding: 6px 18px;
+    border-radius: 100px;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    line-height: 1.08;
+  }
+
+  .hero-line {
+    display: block;
+  }
+
+  .hero-line-last {
+    display: block;
+    color: var(--accent-light);
+  }
+
+  .hero-sub {
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 36px;
+    max-width: 480px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .hero-btn {
+    padding: 16px 40px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s var(--ease-out-quart);
+  }
+
+  .hero-btn-primary {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .hero-btn-primary:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px oklch(55% 0.16 260 / 0.25);
+  }
+
+  .hero-btn-ghost {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid oklch(65% 0.14 265 / 0.25);
+  }
+
+  .hero-btn-ghost:hover {
+    background: oklch(100% 0 0 / 0.04);
+    border-color: var(--accent-light);
+  }
+
+  .hero-perks {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .perk-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.4;
+  }
+
+  /* Mock card */
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-card-mock {
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 24px 80px oklch(0% 0 0 / 0.3);
+    transition: transform 0.3s var(--ease-out-quart);
+  }
+
+  .hero-card-mock:hover {
+    transform: translateY(-4px);
+  }
+
+  .mock-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mock-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .mock-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.3;
+  }
+
+  .mock-url {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .mock-img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .mock-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .mock-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mock-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .mock-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mock-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-caption {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  @media (max-width: 900px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      text-align: center;
+    }
+
+    .hero-text {
+      max-width: 100%;
+    }
+
+    .hero-sub {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .hero-perks {
+      justify-content: center;
+    }
+
+    .hero-visual {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 85vh;
+      padding: 100px 0 60px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-btn {
+      width: 100%;
+      max-width: 300px;
+      text-align: center;
+    }
+
+    .hero-glow-blue {
+      width: 300px;
+      height: 300px;
+    }
+
+    .hero-glow-gold {
+      display: none;
+    }
+  }
+</style>

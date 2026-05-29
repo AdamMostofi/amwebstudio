@@ -1,0 +1,199 @@
+---
+---
+
+<section class="section contact-section reveal" id="contact">
+  <div class="contact-glow"></div>
+
+  <div class="container">
+    <div class="contact-card">
+      <p class="contact-badge">Let's Talk</p>
+      <h2 class="contact-title">Your website is one conversation away</h2>
+      <p class="contact-desc">
+        No pressure. No complicated proposals. Just tell me a bit about your business
+        and I will send you a simple plan.
+      </p>
+
+      <div class="contact-methods">
+        <a href="https://wa.me/961XXXXXXXX" class="contact-method" target="_blank" rel="noopener">
+          <span class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          <div>
+            <strong class="contact-method-title">WhatsApp me</strong>
+            <span class="contact-label">Fastest response: within 2 hours</span>
+          </div>
+          <span class="contact-arrow">&rarr;</span>
+        </a>
+
+        <a href="mailto:hello@amwebstudio.com" class="contact-method">
+          <span class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <div>
+            <strong class="contact-method-title">Send an email</strong>
+            <span class="contact-label">I will respond within 24 hours</span>
+          </div>
+          <span class="contact-arrow">&rarr;</span>
+        </a>
+      </div>
+
+      <div class="contact-trust">
+        <p>Not sure yet? <a href="#demo-menu">See the live demos</a> to see exactly what you would get. No commitment needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-section {
+    position: relative;
+    overflow: hidden;
+    padding: 120px 0;
+  }
+
+  .contact-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: oklch(55% 0.16 260 / 0.04);
+    filter: blur(100px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .contact-card {
+    max-width: 540px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    border: 1px solid oklch(55% 0.16 260 / 0.25);
+    padding: 4px 14px;
+    border-radius: 100px;
+  }
+
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .contact-desc {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 36px;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .contact-method {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    transition: all 0.25s var(--ease-out-quart);
+    text-align: left;
+  }
+
+  .contact-method:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px oklch(55% 0.16 260 / 0.1);
+  }
+
+  .contact-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-light);
+    transition: background 0.25s ease-out;
+  }
+
+  .contact-method:hover .contact-icon {
+    background: oklch(55% 0.16 260 / 0.15);
+  }
+
+  .contact-method-title {
+    display: block;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+
+  .contact-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .contact-arrow {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin-left: auto;
+    transition: transform 0.25s var(--ease-out-quart), color 0.25s var(--ease-out-quart);
+  }
+
+  .contact-method:hover .contact-arrow {
+    transform: translateX(4px);
+    color: var(--accent-light);
+  }
+
+  .contact-trust {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .contact-trust a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease-out;
+  }
+
+  .contact-trust a:hover {
+    color: var(--accent-light);
+  }
+
+  @media (max-width: 768px) {
+    .contact-section {
+      padding: 80px 0;
+    }
+  }
+</style>

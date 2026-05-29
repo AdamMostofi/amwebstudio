@@ -1,0 +1,584 @@
+---
+---
+
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<script>
+  (() => {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let w, h, particles = [], constellations = [];
+    const MAX_PARTICLES = 600;
+    const AMBIENT_COUNT = 130;
+    const MAX_CONSTELLATIONS = 12;
+    let nextGroupId = 1;
+    let frameCount = 0;
+
+    const palette = [
+      { r: 60, g: 130, b: 255, a: 0.7 },
+      { r: 255, g: 200, b: 80, a: 0.5 },
+      { r: 90, g: 155, b: 255, a: 0.4 },
+      { r: 255, g: 215, b: 110, a: 0.3 },
+    ];
+
+    let mouse = { x: -1000, y: -1000, lx: -1000, ly: -1000 };
+    let raf;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+
+    function clampParticles() {
+      if (particles.length <= MAX_PARTICLES) return;
+      let i = AMBIENT_COUNT;
+      while (particles.length > MAX_PARTICLES && i < particles.length) {
+        if (particles[i].groupId > 0 && particles[i].constellationId < 0) {
+          particles.splice(i, 1);
+        } else {
+          i++;
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y, opts = {}) {
+        this.x = x ?? Math.random() * w;
+        this.y = y ?? Math.random() * h;
+        this.size = opts.size ?? Math.random() * 2.5 + 1.2;
+        this.baseSize = this.size;
+        this.vx = opts.vx ?? (Math.random() - 0.5) * 0.3;
+        this.vy = opts.vy ?? (Math.random() - 0.5) * 0.3;
+        this.col = opts.col ?? palette[Math.floor(Math.random() * palette.length)];
+        this.baseAlpha = this.col.a * (Math.random() * 0.4 + 0.2);
+        this.alpha = this.baseAlpha;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.pulseSpeed = Math.random() * 0.015 + 0.008;
+        this.twinklePhase = Math.random() * Math.PI * 2;
+        this.twinkleSpeed = Math.random() * 0.04 + 0.02;
+        this.age = 0;
+        this.drag = opts.drag ?? 0.96;
+        this.groupId = opts.groupId ?? -1;
+        this.constellationId = -1;
+        this.constellationTarget = null;
+        this.constellationWeight = 0;
+      }
+
+      update() {
+        this.age++;
+        this.pulse += this.pulseSpeed;
+        this.twinklePhase += this.twinkleSpeed;
+        this.alpha = Math.max(0, Math.min(1, this.baseAlpha + Math.sin(this.pulse) * 0.08));
+        this.size = this.baseSize + Math.sin(this.twinklePhase) * 0.3;
+
+        let dx = this.x - mouse.x;
+        let dy = this.y - mouse.y;
+        let dist = dx * dx + dy * dy;
+        let repelRadius = 120 * 120;
+
+        if (dist < repelRadius && dist > 0) {
+          let force = (repelRadius - dist) / repelRadius;
+          let angle = Math.atan2(dy, dx);
+          let push = force * 2.8;
+          this.vx += Math.cos(angle) * push;
+          this.vy += Math.sin(angle) * push;
+          if (dist < 50 * 50) {
+            let proximity = 1 - dist / (50 * 50);
+            this.alpha = Math.min(1, this.alpha + proximity * 0.5);
+          }
+        }
+
+        if (this.constellationId >= 0 && this.constellationTarget) {
+          this.constellationWeight = Math.min(1, this.constellationWeight + 0.04);
+          let tdx = this.constellationTarget.x - this.x;
+          let tdy = this.constellationTarget.y - this.y;
+          this.x += tdx * 0.06;
+          this.y += tdy * 0.06;
+          this.vx *= 0.9;
+          this.vy *= 0.9;
+          return false;
+        }
+
+        this.vx *= this.drag;
+        this.vy *= this.drag;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < -60) { this.x = w + 50; this.vx *= 0.5; }
+        if (this.x > w + 60) { this.x = -50; this.vx *= 0.5; }
+        if (this.y < -60) { this.y = h + 50; this.vy *= 0.5; }
+        if (this.y > h + 60) { this.y = -50; this.vy *= 0.5; }
+        return false;
+      }
+
+      draw() {
+        if (this.alpha <= 0 || this.size <= 0) return;
+        let a = Math.max(0, Math.min(1, this.alpha));
+        if (this.constellationId >= 0 && this.constellationWeight > 0.5) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size + 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.col.r}, ${this.col.g}, ${this.col.b}, ${a * 0.15})`;
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.col.r}, ${this.col.g}, ${this.col.b}, ${a})`;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < AMBIENT_COUNT; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    // --- Constellation shapes (weighted) ---
+
+    const SHAPES = [];
+
+    // Hexagram (6-pointed star)
+    (function() {
+      let a = Math.PI / 3;
+      let pts = [];
+      for (let i = 0; i < 3; i++) {
+        let ang = i * a - Math.PI / 2;
+        pts.push({ x: Math.cos(ang), y: Math.sin(ang) });
+      }
+      for (let i = 0; i < 3; i++) {
+        let ang = i * a + Math.PI / 6;
+        pts.push({ x: Math.cos(ang), y: Math.sin(ang) });
+      }
+      let edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]];
+      SHAPES.push({ name:'hexagram', weight:4, pts, edges, min:6, max:6 });
+    })();
+
+    // Diamond crystal
+    (function() {
+      let pts = [
+        { x:0, y:-1 }, { x:-0.5, y:-0.4 }, { x:0.5, y:-0.4 },
+        { x:-0.8, y:0.1 }, { x:0.8, y:0.1 }, { x:0, y:0 },
+        { x:-0.4, y:0.6 }, { x:0.4, y:0.6 }, { x:0, y:1 },
+      ];
+      let edges = [[0,1],[0,2],[1,3],[2,4],[3,5],[4,5],[3,6],[4,7],[6,8],[7,8],[1,5],[2,5],[5,6],[5,7]];
+      SHAPES.push({ name:'diamond', weight:3, pts, edges, min:7, max:9 });
+    })();
+
+    // Concentric rings
+    (function() {
+      let pts = [];
+      for (let i = 0; i < 6; i++) {
+        let ang = i * Math.PI / 3;
+        pts.push({ x: Math.cos(ang) * 0.4, y: Math.sin(ang) * 0.4 });
+      }
+      for (let i = 0; i < 8; i++) {
+        let ang = i * Math.PI / 4;
+        pts.push({ x: Math.cos(ang), y: Math.sin(ang) });
+      }
+      let edges = [];
+      for (let i = 0; i < 6; i++) edges.push([i, (i + 1) % 6]);
+      for (let i = 0; i < 8; i++) edges.push([6 + i, 6 + (i + 1) % 8]);
+      SHAPES.push({ name:'rings', weight:3, pts, edges, min:12, max:14 });
+    })();
+
+    // Radiating starburst
+    (function() {
+      let pts = [];
+      for (let i = 0; i < 4; i++) {
+        let ang = i * Math.PI / 2 - Math.PI / 4;
+        pts.push({ x: Math.cos(ang) * 0.3, y: Math.sin(ang) * 0.3 });
+      }
+      for (let i = 0; i < 8; i++) {
+        let ang = i * Math.PI / 4;
+        pts.push({ x: Math.cos(ang), y: Math.sin(ang) });
+      }
+      let edges = [];
+      for (let i = 0; i < 4; i++) edges.push([i, 4 + i * 2]);
+      for (let i = 0; i < 4; i++) edges.push([i, 4 + (i * 2 + 1) % 8]);
+      for (let i = 0; i < 8; i++) edges.push([4 + i, 4 + (i + 2) % 8]);
+      SHAPES.push({ name:'starburst', weight:4, pts, edges, min:10, max:12 });
+    })();
+
+    // Infinity
+    (function() {
+      let pts = [
+        { x:0.4,y:-0.5 }, { x:0.9,y:-0.2 }, { x:0.9,y:0.2 }, { x:0.4,y:0.5 },
+        { x:-0.4,y:-0.5 }, { x:-0.9,y:-0.2 }, { x:-0.9,y:0.2 }, { x:-0.4,y:0.5 },
+        { x:0,y:0 },
+      ];
+      let edges = [[0,1],[1,2],[2,3],[3,8],[8,4],[4,5],[5,6],[6,7],[0,8],[8,7]];
+      SHAPES.push({ name:'infinity', weight:3, pts, edges, min:7, max:9 });
+    })();
+
+    // Cube
+    (function() {
+      let pts = [
+        { x:-0.4,y:-0.4 }, { x:0.4,y:-0.4 }, { x:0.4,y:0.4 }, { x:-0.4,y:0.4 },
+        { x:-0.2,y:-0.7 }, { x:0.6,y:-0.7 }, { x:0.6,y:0.1 }, { x:-0.2,y:0.1 },
+      ];
+      let edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+      SHAPES.push({ name:'cube', weight:2, pts, edges, min:7, max:8 });
+    })();
+
+    // Spiral galaxy
+    (function() {
+      let pts = [];
+      for (let i = 0; i < 10; i++) {
+        let t = i / 9;
+        let ang = t * Math.PI * 3;
+        let r = 0.15 + t * 0.85;
+        pts.push({ x: Math.cos(ang) * r, y: Math.sin(ang) * r });
+      }
+      let edges = [];
+      for (let i = 0; i < 9; i++) edges.push([i, i + 1]);
+      SHAPES.push({ name:'spiral', weight:3, pts, edges, min:8, max:10 });
+    })();
+
+    // Heart (low probability)
+    (function() {
+      let pts = [
+        { x:0,y:-0.4 }, { x:0.3,y:-0.9 }, { x:0.7,y:-0.5 }, { x:0.7,y:0 },
+        { x:0.3,y:0.5 }, { x:0,y:0.9 },
+        { x:-0.3,y:0.5 }, { x:-0.7,y:0 }, { x:-0.7,y:-0.5 }, { x:-0.3,y:-0.9 },
+      ];
+      let edges = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,0],[0,2],[2,7],[7,9]];
+      SHAPES.push({ name:'heart', weight:1, pts, edges, min:8, max:10 });
+    })();
+
+    // Dollar sign (low probability)
+    (function() {
+      let pts = [
+        { x:0.2,y:-1 }, { x:0.6,y:-0.6 }, { x:0,y:-0.2 },
+        { x:-0.6,y:0.2 }, { x:0,y:0.6 }, { x:0.2,y:1 },
+        { x:-0.25,y:-0.35 }, { x:0.25,y:-0.35 },
+        { x:-0.25,y:0.35 }, { x:0.25,y:0.35 },
+      ];
+      let edges = [[0,1],[1,2],[2,3],[3,4],[4,5],[6,7],[8,9],[2,6],[2,8]];
+      SHAPES.push({ name:'dollar', weight:1, pts, edges, min:8, max:10 });
+    })();
+
+    function pickShape() {
+      let total = SHAPES.reduce((s, sh) => s + sh.weight, 0);
+      let r = Math.random() * total;
+      for (let sh of SHAPES) {
+        r -= sh.weight;
+        if (r <= 0) return sh;
+      }
+      return SHAPES[0];
+    }
+
+    // --- Burst ---
+
+    function spawnBurst(x, y, count) {
+      count = count ?? 24 + Math.floor(Math.random() * 12);
+      let groupId = nextGroupId++;
+      let hue = Math.random() > 0.5 ? palette[0] : palette[2];
+      for (let i = 0; i < count; i++) {
+        let angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.3;
+        let speed = Math.random() * 1.5 + 0.5;
+        let col = Math.random() > 0.7 ? palette[1] : hue;
+        let p = new Particle(x, y, {
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: Math.random() * 2 + 1,
+          col: col,
+          drag: 0.94,
+          groupId,
+        });
+        particles.push(p);
+      }
+      clampParticles();
+    }
+
+    // --- Trail ---
+
+    function drawTrail() {
+      if (mouse.x < 0) return;
+      let dx = mouse.x - mouse.lx;
+      let dy = mouse.y - mouse.ly;
+      let dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 2) return;
+      for (let t = 0; t < 1; t += 0.04) {
+        let tx = mouse.lx + dx * t;
+        let ty = mouse.ly + dy * t;
+        let a = (1 - t) * 0.12;
+        let r = 2 + (1 - t) * 5;
+        let grad = ctx.createRadialGradient(tx, ty, 0, tx, ty, r);
+        grad.addColorStop(0, `rgba(90, 155, 255, ${a})`);
+        grad.addColorStop(0.4, `rgba(60, 130, 255, ${a * 0.4})`);
+        grad.addColorStop(1, `rgba(60, 130, 255, 0)`);
+        ctx.beginPath();
+        ctx.arc(tx, ty, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+    }
+
+    // --- Connections ---
+
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].constellationId >= 0) continue;
+        for (let j = i + 1; j < particles.length; j++) {
+          if (particles[j].constellationId >= 0) continue;
+          let dx = particles[i].x - particles[j].x;
+          let dy = particles[i].y - particles[j].y;
+          let dist = dx * dx + dy * dy;
+          if (dist < 130 * 130) {
+            let a = (1 - dist / (130 * 130)) * 0.08;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(60, 130, 255, ${a})`;
+            ctx.lineWidth = 0.4;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // --- Constellation detection ---
+
+    function findClusters() {
+      let burstParticles = particles.filter(p => p.groupId > 0 && p.constellationId < 0);
+      if (burstParticles.length < 6) return [];
+      let visited = new Set();
+      let clusters = [];
+      for (let i = 0; i < burstParticles.length; i++) {
+        if (visited.has(i)) continue;
+        let queue = [i];
+        visited.add(i);
+        let cluster = [];
+        while (queue.length > 0) {
+          let idx = queue.shift();
+          cluster.push(burstParticles[idx]);
+          for (let j = 0; j < burstParticles.length; j++) {
+            if (visited.has(j)) continue;
+            let dx = burstParticles[idx].x - burstParticles[j].x;
+            let dy = burstParticles[idx].y - burstParticles[j].y;
+            if (dx * dx + dy * dy < 65 * 65) {
+              visited.add(j);
+              queue.push(j);
+            }
+          }
+        }
+        if (cluster.length >= 6) {
+          let groupSet = new Set(cluster.map(p => p.groupId));
+          if (groupSet.size >= 3) {
+            clusters.push(cluster);
+          }
+        }
+      }
+      return clusters;
+    }
+
+    function formConstellation(cluster) {
+      if (constellations.length >= MAX_CONSTELLATIONS) return;
+
+      let shape = pickShape();
+      let count = Math.min(shape.pts.length, cluster.length);
+      if (count < shape.min) return;
+
+      let selected = [];
+      let indices = new Set();
+      while (selected.length < count) {
+        let idx = Math.floor(Math.random() * cluster.length);
+        if (!indices.has(idx)) {
+          indices.add(idx);
+          selected.push(cluster[idx]);
+        }
+      }
+
+      let cx = 0, cy = 0;
+      for (let p of selected) { cx += p.x; cy += p.y; }
+      cx /= selected.length;
+      cy /= selected.length;
+
+      let scale = Math.min(w, h) * 0.07;
+      let rot = Math.random() * Math.PI * 2;
+      let cosR = Math.cos(rot), sinR = Math.sin(rot);
+
+      let constId = constellations.length;
+      let targets = [];
+
+      for (let i = 0; i < count; i++) {
+        let pt = shape.pts[i];
+        let tx = cx + (pt.x * cosR - pt.y * sinR) * scale;
+        let ty = cy + (pt.x * sinR + pt.y * cosR) * scale;
+        targets.push({ x: tx, y: ty });
+        selected[i].constellationId = constId;
+        selected[i].constellationTarget = targets[i];
+        selected[i].constellationWeight = 0;
+      }
+
+      constellations.push({
+        id: constId,
+        life: 600,
+        age: 0,
+        particles: selected,
+        targets,
+        edges: shape.edges,
+        color: Math.random() > 0.5 ? palette[0] : palette[2],
+        cx, cy, rot, scale,
+        name: shape.name,
+      });
+    }
+
+    function tickConstellations() {
+      for (let i = constellations.length - 1; i >= 0; i--) {
+        let c = constellations[i];
+        c.age++;
+        if (c.age > c.life) {
+          for (let p of c.particles) {
+            p.constellationId = -1;
+            p.constellationTarget = null;
+          }
+          constellations.splice(i, 1);
+        }
+      }
+    }
+
+    function drawConstellations() {
+      for (let c of constellations) {
+        let fadeIn = Math.min(1, c.age / 30);
+        let fadeOut = c.age > c.life - 60 ? (c.life - c.age) / 60 : 1;
+        let totalAlpha = fadeIn * fadeOut;
+        if (totalAlpha <= 0) continue;
+
+        let rotOffset = Math.sin(c.age * 0.003) * 0.02;
+        let cosR2 = Math.cos(rotOffset), sinR2 = Math.sin(rotOffset);
+
+        for (let edge of c.edges) {
+          let p0 = c.particles[edge[0]];
+          let p1 = c.particles[edge[1]];
+          if (!p0 || !p1) continue;
+          let dx = p1.x - p0.x;
+          let dy = p1.y - p0.y;
+
+          for (let t = 0; t <= 1; t += 0.05) {
+            let px = p0.x + dx * (t + Math.sin(c.age * 0.02 + t * 3) * 0.02);
+            let py = p0.y + dy * (t + Math.cos(c.age * 0.02 + t * 3) * 0.02);
+            let sz = 0.5 + Math.sin(c.age * 0.05 + t * 4) * 0.3;
+            ctx.beginPath();
+            ctx.arc(px, py, sz, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${totalAlpha * 0.6})`;
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.strokeStyle = `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${totalAlpha * 0.4})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.strokeStyle = `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${totalAlpha * 0.12})`;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+
+        let glowGrad = ctx.createRadialGradient(c.cx, c.cy, 0, c.cx, c.cy, 80);
+        glowGrad.addColorStop(0, `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, ${totalAlpha * 0.04})`);
+        glowGrad.addColorStop(1, `rgba(${c.color.r}, ${c.color.g}, ${c.color.b}, 0)`);
+        ctx.beginPath();
+        ctx.arc(c.cx, c.cy, 80, 0, Math.PI * 2);
+        ctx.fillStyle = glowGrad;
+        ctx.fill();
+      }
+    }
+
+    // --- Main loop ---
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+
+      drawTrail();
+
+      frameCount++;
+      if (frameCount % 60 === 0) {
+        let clusters = findClusters();
+        for (let cluster of clusters) {
+          if (Math.random() < 0.02 && constellations.length < MAX_CONSTELLATIONS) {
+            formConstellation(cluster);
+            break;
+          }
+        }
+        tickConstellations();
+      }
+
+      for (let p of particles) {
+        p.update();
+        p.draw();
+      }
+
+      drawConnections();
+      drawConstellations();
+
+      raf = requestAnimationFrame(animate);
+    }
+
+    // --- Events ---
+
+    function onMouse(e) {
+      mouse.lx = mouse.x;
+      mouse.ly = mouse.y;
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    }
+
+    function onTouch(e) {
+      let t = e.touches[0];
+      if (t) {
+        mouse.lx = mouse.x;
+        mouse.ly = mouse.y;
+        mouse.x = t.clientX;
+        mouse.y = t.clientY;
+      }
+    }
+
+    function onLeave() {
+      mouse.lx = mouse.x = -1000;
+      mouse.ly = mouse.y = -1000;
+    }
+
+    function onClick(e) {
+      let target = e.target.closest('a, button, .tier-cta, .hero-btn, .demo-btn-primary, .demo-btn-green, .contact-method');
+      if (target) {
+        let rect = target.getBoundingClientRect();
+        spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 28);
+      } else {
+        spawnBurst(e.clientX, e.clientY, 10);
+      }
+    }
+
+    window.addEventListener('resize', () => { resize(); });
+    window.addEventListener('mousemove', onMouse);
+    window.addEventListener('touchmove', onTouch, { passive: true });
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('click', onClick);
+
+    resize();
+    initParticles();
+    animate();
+  })();
+</script>
+
+<style>
+  #particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>

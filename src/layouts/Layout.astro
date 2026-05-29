@@ -1,0 +1,246 @@
+---
+import ParticleBackground from '../components/ParticleBackground.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'A.M Web Studio - Websites for Beirut Businesses', description = 'We build simple, beautiful websites for restaurants, cafes, clinics, and shops in Beirut. No monthly fees, no complexity.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="page-grid-bg" aria-hidden="true"></div>
+    <ParticleBackground />
+    <div class="page-content">
+      <slot />
+    </div>
+  </body>
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  });
+</script>
+</html>
+
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: oklch(12% 0.012 260);
+    --surface: oklch(16% 0.015 255);
+    --surface-hover: oklch(20% 0.02 250);
+    --text-primary: oklch(92% 0.005 260);
+    --text-secondary: oklch(62% 0.06 270);
+    --text-muted: oklch(42% 0.06 275);
+    --accent: oklch(55% 0.16 260);
+    --accent-light: oklch(65% 0.14 265);
+    --accent-surface: oklch(22% 0.08 260);
+    --accent-gold: oklch(70% 0.12 75);
+    --border: oklch(22% 0.015 255);
+    --success: oklch(55% 0.12 155);
+
+    --font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+
+    --max-width: 1320px;
+
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .container {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section {
+    padding: 100px 0;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .section-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 60px;
+    line-height: 1.7;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    border: none;
+    margin: 0;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  .accent-line {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin: 16px auto 0;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    border: none;
+    font-family: var(--font-sans);
+    line-height: 1.4;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px oklch(55% 0.16 260 / 0.2);
+  }
+
+  .page-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 85% 15%, oklch(55% 0.16 260 / 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 20% 85%, oklch(70% 0.12 75 / 0.03) 0%, transparent 50%),
+      linear-gradient(oklch(100% 0 0 / 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(100% 0 0 / 0.025) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+  }
+
+  /* Hero glow is handled locally — keeps its animation */
+
+  @media (min-width: 1400px) {
+    .container {
+      padding: 0 40px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: 60px 0;
+    }
+
+    .container {
+      padding: 0 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

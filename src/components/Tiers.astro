@@ -1,0 +1,342 @@
+---
+const tiers = [
+  {
+    id: 'digital-card',
+    name: 'Digital Card',
+    setup: '$150',
+    monthly: '$15/mo',
+    time: '~1 hour',
+    tag: 'Best for barbers, small cafes',
+    features: [
+      'Single-page digital business card',
+      'Contact info, social links, Google Maps',
+      'QR code sticker for door/window',
+      'Custom domain + SSL + hosting',
+      'Cloudflare Web Analytics',
+      '1 monthly update included',
+    ],
+  },
+  {
+    id: 'menu-qr',
+    name: 'Menu QR',
+    setup: '$200',
+    monthly: '$20/mo',
+    time: '~2-3 hours',
+    tag: 'Best for restaurants, cafes',
+    featured: true,
+    features: [
+      'Digital menu with categories & photos',
+      'QR code sticker (A5, laminated)',
+      'Arabic & English bilingual',
+      'WhatsApp click-to-chat order button',
+      'Custom domain + SSL + hosting',
+      'Up to 5 menu updates/month',
+      'See popular items via analytics',
+    ],
+  },
+  {
+    id: 'brochure',
+    name: 'Brochure Site',
+    setup: '$350',
+    monthly: '$30/mo',
+    time: '~1-2 days',
+    tag: 'Best for clinics, shops',
+    features: [
+      '5-8 page site (Home, About, Services, Gallery, Contact)',
+      'Contact form with email delivery',
+      'Google Maps embed',
+      'Image gallery / portfolio',
+      'SEO meta tags & Open Graph',
+      'Custom domain + SSL + hosting',
+      'Up to 10 content changes/month',
+    ],
+  },
+  {
+    id: 'full-site',
+    name: 'Full Site',
+    setup: '$500+',
+    monthly: '$50/mo',
+    time: '~3-7 days',
+    tag: 'Best for established businesses',
+    features: [
+      'Up to 20 pages',
+      'Custom design tailored to your brand',
+      'Blog / news section',
+      'Online ordering or booking integration',
+      'You can update content yourself (Markdown + GitHub)',
+      'Priority support — 24h response',
+      'Unlimited updates',
+      'Monthly analytics report',
+    ],
+  },
+];
+---
+
+<section class="section reveal" id="tiers">
+  <div class="container">
+    <h2 class="section-title">Plans for every Beirut business</h2>
+    <p class="section-subtitle">
+      Start small with a digital card, go big with a full site. Every plan includes
+      free hosting, SSL, and a custom domain.
+    </p>
+
+    <div class="tiers-grid">
+      {tiers.map((tier) => (
+        <article class={`tier-card ${tier.featured ? 'tier-featured' : ''}`}>
+          {tier.featured ? (
+            <div class="tier-featured-head">
+              <div class="tier-popular-wrap">
+                <span class="tier-popular">Most Popular</span>
+              </div>
+              <h3 class="tier-featured-name">{tier.name}</h3>
+              <div class="tier-featured-price">
+                <span class="tier-featured-setup">{tier.setup}</span>
+                <span class="tier-featured-label">setup</span>
+                <span class="tier-featured-monthly">then {tier.monthly}</span>
+              </div>
+              <p class="tier-featured-tag">{tier.tag}</p>
+            </div>
+          ) : (
+            <div class="tier-head">
+              <h3 class="tier-name">{tier.name}</h3>
+              <div class="tier-price">
+                <span class="tier-setup">{tier.setup}</span>
+                <span class="tier-label">setup</span>
+                <span class="tier-monthly">{tier.monthly}</span>
+              </div>
+              <p class="tier-time">Setup: {tier.time}</p>
+              <p class="tier-tag">{tier.tag}</p>
+            </div>
+          )}
+          <ul class="tier-features">
+            {tier.features.map((feat) => (
+              <li class="tier-feature">
+                <span class="check">&#10003;</span>
+                {feat}
+              </li>
+            ))}
+          </ul>
+          <a href="#contact" class="tier-cta">
+            Get Started
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .tier-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    position: relative;
+    border: 1px solid var(--border);
+    transition: transform 0.25s var(--ease-out-quart), box-shadow 0.25s var(--ease-out-quart);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tier-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px oklch(0% 0 0 / 0.3);
+  }
+
+  .tier-head {
+    padding: 28px 24px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tier-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .tier-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tier-setup {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .tier-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .tier-monthly {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-left: 8px;
+  }
+
+  .tier-time {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .tier-tag {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .tier-features {
+    list-style: none;
+    padding: 20px 24px;
+    margin: 0;
+    flex: 1;
+  }
+
+  .tier-feature {
+    display: flex;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding: 6px 0;
+  }
+
+  .check {
+    color: var(--success);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .tier-cta {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    background: transparent;
+    color: var(--accent);
+    border: none;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s ease-out, color 0.2s ease-out;
+  }
+
+  .tier-cta:hover {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
+
+  /* Featured */
+  .tier-featured {
+    border-color: var(--accent);
+    border-width: 2px;
+  }
+
+  .tier-featured-head {
+    background: linear-gradient(180deg, oklch(18% 0.06 260), oklch(22% 0.08 260));
+    padding: 28px 24px 20px;
+    text-align: center;
+  }
+
+  .tier-popular-wrap {
+    margin-bottom: 14px;
+  }
+
+  .tier-popular {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 4px 14px;
+    border-radius: 100px;
+  }
+
+  .tier-featured-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .tier-featured-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tier-featured-setup {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .tier-featured-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .tier-featured-monthly {
+    font-size: 0.95rem;
+    color: var(--accent-light);
+    margin-left: 8px;
+  }
+
+  .tier-featured-tag {
+    font-size: 0.8rem;
+    color: oklch(65% 0.14 265 / 0.6);
+    font-weight: 500;
+  }
+
+  .tier-featured .tier-cta {
+    background: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .tier-featured .tier-cta:hover {
+    background: var(--accent-light);
+  }
+
+  @media (max-width: 1024px) {
+    .tiers-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .tiers-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tier-head,
+    .tier-featured-head {
+      padding: 24px 20px 16px;
+    }
+
+    .tier-features {
+      padding: 16px 20px;
+    }
+  }
+</style>

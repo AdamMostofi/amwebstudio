@@ -1,0 +1,165 @@
+---
+const steps = [
+  {
+    num: '01',
+    title: 'Discovery',
+    desc: 'We meet for 30 minutes. You tell me about your business and what you need. Colors, photos, vibe — it all goes into the plan.',
+  },
+  {
+    num: '02',
+    title: 'Design',
+    desc: 'I design your site around your brand. You see a preview. We iterate until it feels right. No templates — every site is built for you.',
+  },
+  {
+    num: '03',
+    title: 'Build',
+    desc: 'I build the site using modern tools. Fast, secure, works on every device. I handle all the technical stuff. You just wait for the link.',
+  },
+  {
+    num: '04',
+    title: 'Deploy',
+    desc: 'Your site goes live on your own custom domain. SSL is automatic. I deliver a QR code you can stick on your door or menu.',
+  },
+  {
+    num: '05',
+    title: 'Manage',
+    desc: 'Need a change? Just text me. New menu items, updated hours, new photos — I handle it. You get a monthly visit report.',
+  },
+];
+---
+
+<section class="section how-section reveal" id="how">
+  <div class="container">
+    <h2 class="section-title">How it works</h2>
+    <div class="accent-line"></div>
+    <p class="section-subtitle">
+      From first chat to live website in days. No meetings about meetings.
+    </p>
+
+    <div class="steps">
+      {steps.map((step, i) => (
+        <div class="step">
+          <div class="step-num">
+            <span>{step.num}</span>
+          </div>
+          <div class="step-body">
+            <h3 class="step-title">{step.title}</h3>
+            <p class="step-desc">{step.desc}</p>
+          </div>
+          {i < steps.length - 1 && <div class="step-line"></div>}
+        </div>
+      ))}
+    </div>
+
+    <div class="how-cta">
+      <p class="how-cta-text">Total time: <strong>3 to 7 days</strong> from start to live.</p>
+      <a href="#contact" class="btn btn-primary">Start Your Site</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .how-section {
+    background: var(--bg);
+  }
+
+  .steps {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .step {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    padding-bottom: 36px;
+  }
+
+  .step:last-child {
+    padding-bottom: 0;
+  }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.2s var(--ease-out-quart), box-shadow 0.2s var(--ease-out-quart);
+  }
+
+  .step:hover .step-num {
+    transform: scale(1.08);
+    box-shadow: 0 0 24px oklch(55% 0.16 260 / 0.3);
+  }
+
+  .step-line {
+    position: absolute;
+    left: 23px;
+    top: 48px;
+    width: 2px;
+    height: calc(100% - 12px);
+    background: var(--border);
+  }
+
+  .step-body {
+    flex: 1;
+    padding-top: 6px;
+  }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .how-cta {
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .how-cta-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .step {
+      gap: 16px;
+      padding-bottom: 28px;
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      font-size: 0.8rem;
+    }
+
+    .step-line {
+      left: 19px;
+    }
+
+    .step-body {
+      padding-top: 4px;
+    }
+  }
+</style>

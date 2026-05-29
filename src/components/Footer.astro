@@ -1,0 +1,119 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <h4 class="footer-logo">A.M Web Studio</h4>
+        <p class="footer-tagline">Websites for Beirut businesses.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#tiers">Plans</a>
+        <a href="#how">How It Works</a>
+        <a href="#demo-menu">Demo</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="footer-side">
+        <a href="https://wa.me/961XXXXXXXX" class="footer-whatsapp" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message on WhatsApp
+        </a>
+        <p class="footer-note">All plans include free hosting + SSL</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; {year} A.M Web Studio. Serving businesses in Beirut.
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--accent);
+    padding: 60px 0 32px;
+  }
+
+  .footer-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-nav a {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: color 0.2s ease-out;
+  }
+
+  .footer-nav a:hover {
+    color: var(--text-primary);
+  }
+
+  .footer-side {
+    text-align: right;
+  }
+
+  .footer-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: color 0.2s ease-out;
+    margin-bottom: 6px;
+  }
+
+  .footer-whatsapp:hover {
+    color: var(--accent);
+  }
+
+  .footer-note {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .footer-bottom {
+    padding-top: 24px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .footer-main {
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-side {
+      text-align: left;
+    }
+  }
+</style>
