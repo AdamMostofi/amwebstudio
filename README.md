@@ -1,46 +1,48 @@
-# Astro Starter Kit: Basics
+# A.M Web Studio
 
-```sh
-npm create astro@latest -- --template basics
+Websites for Beirut businesses. Built with Astro, deployed on Cloudflare Workers.
+
+[![Live Site](https://img.shields.io/badge/Live-→_amwebstudio.adammostofi.workers.dev-blue)](https://amwebstudio.adammostofi.workers.dev)
+[![Astro](https://img.shields.io/badge/Astro-6.x-orange)](https://astro.build)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers-f38020)](https://workers.cloudflare.com)
+
+---
+
+This is the marketing site for A.M Web Studio — a service that builds simple, beautiful websites for restaurants, cafes, clinics, and shops in Beirut. The site itself is the product demo: it demonstrates the speed, quality, and simplicity we sell.
+
+## Tech Stack
+
+- **Astro 6** — static site generation
+- **Cloudflare Workers** — edge deployment via `@astrojs/cloudflare`
+- **TypeScript**
+
+## Project Docs
+
+| File | Description |
+|------|-------------|
+| [DESIGN.md](DESIGN.md) | Full design system: colors, typography, components, do's and don'ts |
+| [PRODUCT.md](PRODUCT.md) | Product strategy, user personas, brand voice, accessibility targets |
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server (localhost:4321)
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Live Site
 
-## 🚀 Project Structure
+[https://amwebstudio.adammostofi.workers.dev](https://amwebstudio.adammostofi.workers.dev)
 
-Inside of your Astro project, you'll see the following folders and files:
+---
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+All plans include free hosting + SSL. Serving businesses in Beirut.
